@@ -3,7 +3,7 @@ from os import getenv
 from .secret import Secret
 
 
-class Env(Secret):
+class EnvVar(Secret):
     """A Secret that automatically loads its value from an environment variable.
 
     The Env class extends Secret to automatically retrieve sensitive values from
@@ -18,18 +18,18 @@ class Env(Secret):
 
     Examples:
         >>> # Assuming API_KEY environment variable is set to "sk-12345"
-        >>> api_key = Env("API_KEY")
+        >>> api_key = EnvVar("API_KEY")
         >>> print(api_key)
         [REDACTED]
         >>> api_key.value
         'sk-12345'
 
         >>> # With default value
-        >>> debug_mode = Env("DEBUG_MODE", default="false")
+        >>> debug_mode = EnvVar("DEBUG_MODE", default="false")
         >>> print(debug_mode.value)  # "false" if DEBUG_MODE not set
 
         >>> # With custom placeholder
-        >>> secret_token = Env("SECRET_TOKEN", placeholder="<ENV_SECRET>")
+        >>> secret_token = EnvVar("SECRET_TOKEN", placeholder="<ENV_SECRET>")
         >>> print(secret_token)
         <ENV_SECRET>
     """
