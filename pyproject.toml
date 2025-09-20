@@ -1,6 +1,6 @@
 [project]
 name = "printsafe"
-version = "0.1.0"
+version = "0.2.0"
 description = "Python library to keep secrets out of logs"
 readme = "README.md"
 authors = [{ name = "Markus Feiks", email = "pypi.packages@feyx.de" }]
@@ -81,6 +81,4 @@ split-on-trailing-comma = true
 detect-same-package = false
 
 [dependency-groups]
-dev = [
-    "pytest>=8.4.2",
-]
+dev = ["pytest>=8.4.2"]
