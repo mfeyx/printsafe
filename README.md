@@ -12,6 +12,8 @@ A Python library that prevents accidental exposure of sensitive data in logs, de
 
 The wrapped value remains fully accessible when explicitly requested, but is protected from accidental disclosure.
 
+The library also includes an `EnvVar` class that extends `Secret` to automatically load sensitive values from environment variables.
+
 ## Installation
 
 ```bash
@@ -50,6 +52,29 @@ print(password)  # [REDACTED]
 # Create a secret with custom placeholder
 token = Secret("abc123xyz", placeholder="<HIDDEN>")
 print(token)     # <HIDDEN>
+```
+
+### Environment Variables
+
+```python
+from printsafe import EnvVar
+
+# Load from environment variable with automatic placeholder
+# Assuming API_KEY environment variable is set to "sk-12345"
+api_key = EnvVar("API_KEY")
+print(api_key)                    # [API_KEY] - uses env var name as placeholder
+
+# With default value if environment variable is not set
+debug_mode = EnvVar("DEBUG_MODE", default="false")
+print(debug_mode)                 # [DEBUG_MODE]
+print(debug_mode.value)           # "false" if DEBUG_MODE not set
+
+# With custom placeholder - overrides the default behavior
+secret_token = EnvVar("SECRET_TOKEN", placeholder="<ENV_SECRET>")
+print(secret_token)               # <ENV_SECRET>
+
+# Access the environment variable name
+print(api_key.name)               # API_KEY
 ```
 
 ### Working with Different Data Types
@@ -136,6 +161,32 @@ except TypeError as e:
 - `placeholder`: The placeholder text used for string representation
 
 #### Methods
+- `__str__()`: Returns the placeholder string
+- `__repr__()`: Returns the placeholder string
+- `__eq__(other)`: Compare with another Secret or value
+- `__hash__()`: Returns hash of the wrapped value
+- `__call__(*args, **kwargs)`: Call the wrapped value if it's callable
+- `__getattr__(name)`: Delegate attribute access to wrapped value
+
+#### Blocked Operations
+- `__iter__()`: Raises `TypeError` to prevent iteration
+
+### `EnvVar(name, default=None, placeholder=None)`
+
+A `Secret` subclass that automatically loads its value from an environment variable.
+
+#### Parameters
+- `name` (str): The name of the environment variable to read
+- `default`: Default value if environment variable is not set (default: `None`)
+- `placeholder` (str, optional): Text to display instead of the actual value. If `None` (default), automatically uses `"[{name}]"` where `{name}` is the environment variable name. Can be explicitly set to any string to override this behavior.
+
+#### Attributes
+- `value`: Access the wrapped sensitive value from the environment variable
+- `placeholder`: The placeholder text used for string representation
+- `name`: The name of the environment variable
+
+#### Methods
+Inherits all methods from `Secret` class:
 - `__str__()`: Returns the placeholder string
 - `__repr__()`: Returns the placeholder string
 - `__eq__(other)`: Compare with another Secret or value
